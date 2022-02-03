@@ -25,8 +25,6 @@ def split_sequence(sequence, n_steps_in, n_steps_out):
 		y.append(seq_y)
 	return array(X), array(y)
 
-start_time = time.perf_counter()
-
 with open("traffic_data_real.csv", newline = '') as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter = ' ')
 	traffic_data = []
@@ -35,41 +33,46 @@ with open("traffic_data_real.csv", newline = '') as csv_file:
 csv_file.close()
 
 # define input sequence
-sample_size = 96*7
-raw_seq = traffic_data[0:sample_size]
+#sample_size = 96*7*4
+#raw_seq = traffic_data[0:sample_size]
 
-#for n_steps_in in range(2,48,2):
-# choose a number of time steps
-n_steps_in = 16
-n_steps_out = 96
-# split into samples
-X, y = split_sequence(raw_seq, n_steps_in, n_steps_out)
-# reshape from [samples, timesteps] into [samples, timesteps, features]
-n_features = 1
-X = X.reshape((X.shape[0], X.shape[1], n_features))
-# define model
-model = Sequential()
-model.add(LSTM(100, activation='relu', return_sequences=True, input_shape=(n_steps_in, n_features)))
-model.add(LSTM(100, activation='relu'))
-model.add(Dense(n_steps_out))
-model.compile(optimizer='adam', loss='mse')
-# fit model
-model.fit(X, y, epochs=50, verbose=0)
-# demonstrate prediction
-x_input = array(raw_seq[sample_size-n_steps_in:sample_size])
-x_input = x_input.reshape((1, n_steps_in, n_features))
-yhat = model.predict(x_input, verbose=0)
-#print(yhat)
+for sample_size in range(96*7,96*7*52,96*7*13):
+	raw_seq = traffic_data[0:sample_size]
+	for n_steps_in in range(2,25):
 
-savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_predicted.csv',asarray(yhat),delimiter=',')
-savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_real.csv',asarray([traffic_data[sample_size:sample_size+n_steps_out]]),delimiter=',')
+		start_time = time.perf_counter()
 
-end_time = time.perf_counter()
+		# choose a number of time steps
+		#n_steps_in = 16
+		n_steps_out = 96
+		# split into samples
+		X, y = split_sequence(raw_seq, n_steps_in, n_steps_out)
+		# reshape from [samples, timesteps] into [samples, timesteps, features]
+		n_features = 1
+		X = X.reshape((X.shape[0], X.shape[1], n_features))
+		# define model
+		model = Sequential()
+		model.add(LSTM(100, activation='relu', return_sequences=True, input_shape=(n_steps_in, n_features)))
+		model.add(LSTM(100, activation='relu'))
+		model.add(Dense(n_steps_out))
+		model.compile(optimizer='adam', loss='mse')
+		# fit model
+		model.fit(X, y, epochs=50, verbose=0)
+		# demonstrate prediction
+		x_input = array(raw_seq[sample_size-n_steps_in:sample_size])
+		x_input = x_input.reshape((1, n_steps_in, n_features))
+		yhat = model.predict(x_input, verbose=0)
+		#print(yhat)
 
-print(f"TIME TAKEN: {end_time-start_time} seconds")
+		savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_predicted.csv',asarray(yhat),delimiter=',')
+		savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_real.csv',asarray([traffic_data[sample_size:sample_size+n_steps_out]]),delimiter=',')
 
-plt.plot([i for i in range(1,len(traffic_data[sample_size:sample_size+n_steps_out])+1)], traffic_data[sample_size:sample_size+n_steps_out], [i for i in range(1,len(yhat[0])+1)], yhat[0])
-plt.xlabel("Data Points (every 15 minutes)")
-plt.ylabel("Traffic (number of cars)")
-plt.savefig(f'{n_steps_in}_steps_in_{sample_size}_sample.png')
-plt.clf()
+		end_time = time.perf_counter()
+
+		print(f"TIME TAKEN: {end_time-start_time} seconds")
+
+		plt.plot([i for i in range(1,len(traffic_data[sample_size:sample_size+n_steps_out])+1)], traffic_data[sample_size:sample_size+n_steps_out], [i for i in range(1,len(yhat[0])+1)], yhat[0])
+		plt.xlabel("Data Points (every 15 minutes)")
+		plt.ylabel("Traffic (number of cars)")
+		plt.savefig(f'{n_steps_in}_steps_in_{sample_size}_sample.png')
+		plt.clf()
