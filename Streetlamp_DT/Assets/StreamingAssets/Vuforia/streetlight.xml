@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig>
+<Tracking>
+<ModelTarget name="streetlight" motionHint="adaptive" trackingMode="default"/>
+
+</Tracking>
+
+<Assembly name="streetlights_assembly" assemblyId="cf21928c3e94414f870c8b8dc14d1265">
+<Part name="streetlight" translation="0 0 0" rotation="AD: 0 0 1 0"/>
+<EntryPoint name="viewpoint_0000" translation="0.0131253 0.254323 0.528611" rotation="AD: 0.7834501240282353 -0.6321716581259712 5.419622397392589 181.9" trained="no">
+
+</EntryPoint>
+
+</Assembly>
+
+</QCARConfig>
