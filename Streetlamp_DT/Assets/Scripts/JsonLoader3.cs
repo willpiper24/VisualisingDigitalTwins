@@ -97,6 +97,7 @@ public class JsonLoader3 : MonoBehaviour
             string displayElectricityToBuy = electricityToBuyFloat.ToString();
             
             string LEDMode = jsonFile["michael_data"][time]["LED_mode"].Value;
+
             if (LEDMode == "1")
             {
                 displayLEDMode = "Battery";
@@ -112,6 +113,7 @@ public class JsonLoader3 : MonoBehaviour
             
             string displayHourlyTraffic = jsonFile["michael_data"][time]["hourly_traffic"].Value;
             string displayPV = jsonFile["michael_data"][time]["PV"].Value;
+            string predictedTraffic = jsonFile["LSTM_data"][time]["predicted_traffic"].Value;
             textMesh.text = $"LED voltage: {displayVoltage} V" +
                 $"\nLED current: {displayCurrent} A" +
                 $"\n\nTime: {displayTime}" +
@@ -123,7 +125,8 @@ public class JsonLoader3 : MonoBehaviour
                 $"\nElectricity to buy: {displayElectricityToBuy} Ah" +
                 $"\nLED mode: {displayLEDMode}" +
                 $"\nHourly traffic (cars and people): {displayHourlyTraffic}" +
-                $"\nPV: {displayPV} W/m^2";
+                $"\nPV: {displayPV} W/m^2" +
+                $"\nPredicted traffic in next half hour (cars): {predictedTraffic}";
         }
         catch
         {
