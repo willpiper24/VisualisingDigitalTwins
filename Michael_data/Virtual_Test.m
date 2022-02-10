@@ -18,6 +18,12 @@ Memopointer_next=1;
 % Here you can select a number from 200-16800, not just 3031 
 % one year = 8760 hours = 17520 half an hours, we get rid of the first and
 % last days
+
+d0 = datetime(2019,1,1);
+d1 = datetime(2019,month(datetime(date)),day(datetime(date)));
+num_days = caldays(between(d0,d1,'days'));
+num_half_hours = num_days*48;
+
 thisEpisode = 3031;
 endEpisode = thisEpisode + T_episode - 1;
 BatterySoC = PV_Power(ceil(thisEpisode/2)).battery;
@@ -91,6 +97,8 @@ All_the_data2(6,:) = Rmemo_backup(7,:);
 All_the_data2(7,:) = Rmemo_backup(9,:);
 All_the_data2(8,:) = Rmemo_backup(10,:);
 
+writematrix(All_the_data2, 'All_the_data.csv');
+
 % 1. Carbon_Real_Norm: Carbon emission dataset in this half an hour 
 % 2. This_Hour_Norm: What is the hour of the day
 % 3. Elec_Used_Norm: How much electricity should we use for the LED light in this half an hour
@@ -103,33 +111,33 @@ All_the_data2(8,:) = Rmemo_backup(10,:);
 % 10. Battery_or_Grid: Should the LED light use power grid electricity or the battery in this half an hour
 
 % Try to comment/delete it, see what will happen?
-load('paper_test.mat')
+% load('paper_test.mat')
 
-j = 1:200;
-subplot(3,1,1)
-plot(j,Rmemo_backup(1,:),'-r');
-ylabel({'Carbon Emission','Intensity (gCO2/kWh)'},'color','k','fontsize',8);
-axis([0 200,0 400])
-
-subplot(3,1,2)
-plot(j,Rmemo_backup(7,:),'-k');
-ylabel({'Electricity','Price (Euro/MWh)'},'color','k','fontsize',9);
-
-subplot(3,1,3)
-plot(j,Rmemo_backup(9,:),'-b');
-ylabel({'Net Power Demand','from Grid with DQN (4Ah)'},'color','k','fontsize',8);
-
-xlabel('Number of half-an-hours','color','k','fontsize',10);
-
-total_demand = 0;
-total_Carbon_Cal = 0;
-total_Price_Cal = 0;
-
-for i = 1:201
-    total_demand = total_demand + PV_Power_episode(i).ElecUsed;
-    total_Carbon_Cal = total_Carbon_Cal + (PV_Power_episode(i).ElecUsed * PV_Power_episode(i).Carbon_Real)/1000;
-    total_Price_Cal = total_Price_Cal + (PV_Power_episode(i).ElecUsed * PV_Power_episode(i).Price)/1000;
-end
+% j = 1:200;
+% subplot(3,1,1)
+% plot(j,Rmemo_backup(1,:),'-r');
+% ylabel({'Carbon Emission','Intensity (gCO2/kWh)'},'color','k','fontsize',8);
+% axis([0 200,0 400])
+% 
+% subplot(3,1,2)
+% plot(j,Rmemo_backup(7,:),'-k');
+% ylabel({'Electricity','Price (Euro/MWh)'},'color','k','fontsize',9);
+% 
+% subplot(3,1,3)
+% plot(j,Rmemo_backup(9,:),'-b');
+% ylabel({'Net Power Demand','from Grid with DQN (4Ah)'},'color','k','fontsize',8);
+% 
+% xlabel('Number of half-an-hours','color','k','fontsize',10);
+% 
+% total_demand = 0;
+% total_Carbon_Cal = 0;
+% total_Price_Cal = 0;
+% 
+% for i = 1:201
+%     total_demand = total_demand + PV_Power_episode(i).ElecUsed;
+%     total_Carbon_Cal = total_Carbon_Cal + (PV_Power_episode(i).ElecUsed * PV_Power_episode(i).Carbon_Real)/1000;
+%     total_Price_Cal = total_Price_Cal + (PV_Power_episode(i).ElecUsed * PV_Power_episode(i).Price)/1000;
+% end
 
 
 

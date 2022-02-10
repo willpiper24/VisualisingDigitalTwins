@@ -111,12 +111,16 @@ public class JsonLoader3 : MonoBehaviour
                 displayLEDMode = "Unknown mode";
             }
             
-            string displayHourlyTraffic = jsonFile["michael_data"][time]["hourly_traffic"].Value;
-            string displayPV = jsonFile["michael_data"][time]["PV"].Value;
+            //string displayHourlyTraffic = jsonFile["michael_data"][time]["hourly_traffic"].Value;
+            //string displayPV = jsonFile["michael_data"][time]["PV"].Value;
             string predictedTraffic = jsonFile["LSTM_data"][time]["predicted_traffic"].Value;
+
+            DateTime thisDay = DateTime.Today;
+
             textMesh.text = $"LED voltage: {displayVoltage} V" +
                 $"\nLED current: {displayCurrent} A" +
-                $"\n\nTime: {displayTime}" +
+                $"\n\nDate: {thisDay.ToString("d")}" +
+                $"\nTime: {displayTime}" +
                 $"\nCarbon Emission: {displayCarbonEmission} gCO2/kWh" +
                 $"\nElectricity to use: {displayElectricityToUse} Wh" +
                 $"\nElectricity generated: {displayElectricityGenerated} Wh" +
@@ -124,8 +128,8 @@ public class JsonLoader3 : MonoBehaviour
                 $"\nElectricity price: {displayElectricityPrice} €/MWh" +
                 $"\nElectricity to buy: {displayElectricityToBuy} Ah" +
                 $"\nLED mode: {displayLEDMode}" +
-                $"\nHourly traffic (cars and people): {displayHourlyTraffic}" +
-                $"\nPV: {displayPV} W/m^2" +
+                //$"\nHourly traffic (cars and people): {displayHourlyTraffic}" +
+                //$"\nPV: {displayPV} W/m^2" +
                 $"\nPredicted traffic in next half hour (cars): {predictedTraffic}";
         }
         catch
