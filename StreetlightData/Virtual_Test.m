@@ -23,8 +23,14 @@ d0 = datetime(2019,1,1);
 d1 = datetime(2019,month(datetime(date)),day(datetime(date)));
 num_days = caldays(between(d0,d1,'days'));
 num_half_hours = num_days*48;
+t1 = datetime(floor(now),'ConvertFrom','datenum');
+t2 = datetime(now,'ConvertFrom','datenum');
+t11=datevec(datenum(t1));
+t22=datevec(datenum(t2));
+time_interval_in_seconds = etime(t22,t11);
+time_interval_in_half_hours = num_half_hours + (floor(time_interval_in_seconds/(30*60)));
 
-thisEpisode = 3031;
+thisEpisode = time_interval_in_half_hours + 1;
 endEpisode = thisEpisode + T_episode - 1;
 BatterySoC = PV_Power(ceil(thisEpisode/2)).battery;
 

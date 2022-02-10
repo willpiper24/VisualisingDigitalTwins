@@ -1,4 +1,5 @@
 # univariate multi-step vector-output stacked lstm example
+from datetime import datetime
 from numpy import array
 from numpy import asarray
 from numpy import savetxt
@@ -8,6 +9,8 @@ from keras.layers import Dense
 import csv
 import matplotlib.pyplot as plt
 import time
+from datetime import date, datetime
+import math
 
 # split a univariate sequence into samples
 def split_sequence(sequence, n_steps_in, n_steps_out):
@@ -36,14 +39,18 @@ csv_file.close()
 #sample_size = 96*7*4
 #raw_seq = traffic_data[0:sample_size]
 
-sample_size = 35039
-raw_seq = traffic_data[0:sample_size]
-n_steps_in = 15
+t0 = datetime(2019,1,1,0,0,0)
+t1 = datetime(2019,date.today().month,date.today().day,datetime.now().hour,datetime.now().minute,datetime.now().second)
+total_seconds = (t1-t0).total_seconds()
+
+sample_size = math.floor(total_seconds/(15*60))-2
+#sample_size = 35039
+raw_seq = traffic_data[sample_size-(96*7*4):sample_size]
 
 start_time = time.perf_counter()
 
 # choose a number of time steps
-#n_steps_in = 16
+n_steps_in = 15
 n_steps_out = 96
 # split into samples
 X, y = split_sequence(raw_seq, n_steps_in, n_steps_out)
@@ -59,13 +66,14 @@ model.compile(optimizer='adam', loss='mse')
 # fit model
 model.fit(X, y, epochs=50, verbose=0)
 # demonstrate prediction
-x_input = array(raw_seq[sample_size-n_steps_in:sample_size])
+x_input = array(raw_seq[-1-n_steps_in:-1])
 x_input = x_input.reshape((1, n_steps_in, n_features))
 yhat = model.predict(x_input, verbose=0)
 #print(yhat)
 
-savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_predicted.csv',asarray(yhat),delimiter=',')
-savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_real.csv',asarray([traffic_data[sample_size:sample_size+n_steps_out]]),delimiter=',')
+#savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_predicted.csv',asarray(yhat),delimiter=',')
+#savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_real.csv',asarray([traffic_data[sample_size:sample_size+n_steps_out]]),delimiter=',')
+savetxt('LSTM_data.csv',asarray(yhat),delimiter=',')
 
 end_time = time.perf_counter()
 
