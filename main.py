@@ -51,9 +51,10 @@ def run():
         json.dump(data_dict, outfile)
 
     subprocess.run(['scp', 'All_the_data.json', 'pi@192.168.1.246:/home/pi/Documents/dtserver/All_the_data.json'])
+    subprocess.run(['scp', os.path.join(streetlightdata_dir,'net_power_demand.png'), 'pi@192.168.1.246:/home/pi/Documents/dtserver/net_power_demand.png'])
 
-while True:
-    run()
-    time.sleep(5)
+#while True:
+    #run()
+    #time.sleep(5)
 
 run()

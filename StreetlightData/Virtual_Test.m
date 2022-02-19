@@ -119,7 +119,7 @@ writematrix(All_the_data2, 'All_the_data.csv');
 % Try to comment/delete it, see what will happen?
 % load('paper_test.mat')
 
-% j = 1:200;
+j = 1:200;
 % subplot(3,1,1)
 % plot(j,Rmemo_backup(1,:),'-r');
 % ylabel({'Carbon Emission','Intensity (gCO2/kWh)'},'color','k','fontsize',8);
@@ -130,20 +130,33 @@ writematrix(All_the_data2, 'All_the_data.csv');
 % ylabel({'Electricity','Price (Euro/MWh)'},'color','k','fontsize',9);
 % 
 % subplot(3,1,3)
-% plot(j,Rmemo_backup(9,:),'-b');
-% ylabel({'Net Power Demand','from Grid with DQN (4Ah)'},'color','k','fontsize',8);
+hold on
+plot(j,Rmemo_backup(9,:),'-b','color','w');
+grid on;
+ylabel({'Net Power Demand','from Grid with DQN (4Ah)'},'color','k','fontsize',8);
 % 
-% xlabel('Number of half-an-hours','color','k','fontsize',10);
+xlabel('Number of Half Hours','color','k','fontsize',10);
+ax = gca;
+ax.Color = 'none';
+ax.YColor = 'w';
+ax.XColor = 'w';
+ax.GridColor = [0.5 0.5 0.5];
+ax.GridAlpha = 0.9;
+ax.FontSize = 15;
+% exportgraphics(gcf,'net_power_demand.tif','Resolution',500)
+set(gcf,'GraphicsSmoothing','off')
+export_fig 'net_power_demand.png' -transparent -a4 -m4
+hold off
 % 
-% total_demand = 0;
-% total_Carbon_Cal = 0;
-% total_Price_Cal = 0;
-% 
-% for i = 1:201
-%     total_demand = total_demand + PV_Power_episode(i).ElecUsed;
-%     total_Carbon_Cal = total_Carbon_Cal + (PV_Power_episode(i).ElecUsed * PV_Power_episode(i).Carbon_Real)/1000;
-%     total_Price_Cal = total_Price_Cal + (PV_Power_episode(i).ElecUsed * PV_Power_episode(i).Price)/1000;
-% end
+total_demand = 0;
+total_Carbon_Cal = 0;
+total_Price_Cal = 0;
+
+for i = 1:201
+    total_demand = total_demand + PV_Power_episode(i).ElecUsed;
+    total_Carbon_Cal = total_Carbon_Cal + (PV_Power_episode(i).ElecUsed * PV_Power_episode(i).Carbon_Real)/1000;
+    total_Price_Cal = total_Price_Cal + (PV_Power_episode(i).ElecUsed * PV_Power_episode(i).Price)/1000;
+end
 
 
 

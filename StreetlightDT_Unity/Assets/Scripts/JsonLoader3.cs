@@ -21,6 +21,8 @@ public class JsonLoader3 : MonoBehaviour
     public string time;
     public string displayTime;
     public string displayLEDMode;
+    //public Material wireFrameGlow;
+    //public Material wireFrame;
 
     // Start is called before the first frame update
     void Start()
@@ -98,13 +100,21 @@ public class JsonLoader3 : MonoBehaviour
             
             string LEDMode = jsonFile["michael_data"][time]["LED_mode"].Value;
 
+            var pylonRenderer = GameObject.Find("pylon").GetComponent<MeshRenderer>();
+            var batteryRenderer = GameObject.Find("battery").GetComponent<MeshRenderer>();
+            Color greenGlow = new Color(0.0f, 0.25f, 0.0f, 0.8f);
+            Color darkGrey = new Color(0.0f, 0.0f, 0.0f, 0.8f);
             if (LEDMode == "1")
             {
                 displayLEDMode = "Battery";
+                batteryRenderer.material.SetColor("_Color", greenGlow);
+                pylonRenderer.material.SetColor("_Color", darkGrey);
             }
             else if (LEDMode == "2")
             {
                 displayLEDMode = "Power grid";
+                pylonRenderer.material.SetColor("_Color", greenGlow);
+                batteryRenderer.material.SetColor("_Color", darkGrey);
             }
             else
             {
