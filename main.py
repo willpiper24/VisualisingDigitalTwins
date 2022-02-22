@@ -1,4 +1,6 @@
 import csv
+from dataclasses import dataclass
+from matplotlib.cbook import maxdict
 import numpy as np
 import json
 import subprocess
@@ -27,10 +29,15 @@ def run():
         LSTM_data = [float(i) for i in LSTM_data]
     csv_file.close()
 
+    max_traffic = []
+    for i in range(len(LSTM_data)-1):
+        max_traffic.append(LSTM_data[i]+LSTM_data[i+1]) 
+        max_traffic = max(max_traffic)
+
     data_dict = {}
     data_dict['michael_data'] = {}
     data_dict['LSTM_data'] = {}
-    for column in range(48):
+    for column in range(24):
         time = str(data[1][column])
         data_dict['michael_data'][time] = {}
         data_dict['LSTM_data'][time] = {}
@@ -45,7 +52,10 @@ def run():
         #data_dict['michael_data'][time]['hourly_traffic'] = str(data[8][column])
         #data_dict['michael_data'][time]['PV'] = str(data[9][column])
         #data_dict['LSTM_data'][time]['predicted_traffic'] = str(round(sum(LSTM_data[int(float(time)/0.25):int(float(time)/0.25+2)])))
-        data_dict['LSTM_data'][time]['predicted_traffic'] = str(round(sum(LSTM_data[column*2:column*2+2])))
+        predicted_traffic = sum(LSTM_data[column*2:column*2+2])
+        data_dict['LSTM_data'][time]['predicted_traffic'] = str(round(predicted_traffic))
+        base_brightness = 50
+        data_dict['LSTM_data'][time]['predicted_brightness'] = str(base_brightness + (predicted_traffic/max_traffic)*(100-base_brightness))
 
     with open('All_the_data.json', 'w') as outfile:
         json.dump(data_dict, outfile)

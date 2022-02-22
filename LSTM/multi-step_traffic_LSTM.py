@@ -1,11 +1,13 @@
 # univariate multi-step vector-output stacked lstm example
-from datetime import datetime
+from datetime import datetime, timedelta
+import numpy as np
 from numpy import array
 from numpy import asarray
 from numpy import savetxt
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
+from keras.metrics import mean_absolute_percentage_error
 import csv
 import matplotlib.pyplot as plt
 import time
@@ -39,49 +41,68 @@ csv_file.close()
 #sample_size = 96*7*4
 #raw_seq = traffic_data[0:sample_size]
 
-t0 = datetime(2019,1,1,0,0,0)
-t1 = datetime(2019,date.today().month,date.today().day,datetime.now().hour,datetime.now().minute,datetime.now().second)
-total_seconds = (t1-t0).total_seconds()
+RMSE_values = {}
+MAPE_values = {}
+for i in range(0,1):
+	now = datetime.now() + timedelta(days=i) + timedelta(hours=i*4)
 
-sample_size = math.floor(total_seconds/(15*60))-2
-#sample_size = 35039
-raw_seq = traffic_data[sample_size-(96*7*4):sample_size]
+	t0 = datetime(2019,1,1,0,0,0)
+	t1 = datetime(2019,date.today().month,date.today().day,now.hour,now.minute,now.second)
+	total_seconds = (t1-t0).total_seconds()
 
-start_time = time.perf_counter()
+	sample_size = math.floor(total_seconds/(15*60))-2
+	#sample_size = 35039
+	raw_seq = traffic_data[sample_size-(96*7*4):sample_size]
 
-# choose a number of time steps
-n_steps_in = 15
-n_steps_out = 96
-# split into samples
-X, y = split_sequence(raw_seq, n_steps_in, n_steps_out)
-# reshape from [samples, timesteps] into [samples, timesteps, features]
-n_features = 1
-X = X.reshape((X.shape[0], X.shape[1], n_features))
-# define model
-model = Sequential()
-model.add(LSTM(100, activation='relu', return_sequences=True, input_shape=(n_steps_in, n_features)))
-model.add(LSTM(100, activation='relu'))
-model.add(Dense(n_steps_out))
-model.compile(optimizer='adam', loss='mse')
-# fit model
-model.fit(X, y, epochs=50, verbose=0)
-# demonstrate prediction
-x_input = array(raw_seq[-1-n_steps_in:-1])
-x_input = x_input.reshape((1, n_steps_in, n_features))
-yhat = model.predict(x_input, verbose=0)
-#print(yhat)
+	start_time = time.perf_counter()
 
-#savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_predicted.csv',asarray(yhat),delimiter=',')
-#savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_real.csv',asarray([traffic_data[sample_size:sample_size+n_steps_out]]),delimiter=',')
-savetxt('LSTM_data.csv',asarray(yhat),delimiter=',')
+	# choose a number of time steps
+	n_steps_in = 15
+	n_steps_out = 48
+	# split into samples
+	X, y = split_sequence(raw_seq, n_steps_in, n_steps_out)
+	# reshape from [samples, timesteps] into [samples, timesteps, features]
+	n_features = 1
+	X = X.reshape((X.shape[0], X.shape[1], n_features))
+	# define model
+	model = Sequential()
+	model.add(LSTM(100, activation='relu', return_sequences=True, input_shape=(n_steps_in, n_features)))
+	model.add(LSTM(100, activation='relu'))
+	model.add(Dense(n_steps_out))
+	model.compile(optimizer='adam', loss='mse')
+	# fit model
+	model.fit(X, y, epochs=100, verbose=0)
+	# demonstrate prediction
+	x_input = array(raw_seq[-1-n_steps_in:-1])
+	x_input = x_input.reshape((1, n_steps_in, n_features))
+	yhat = model.predict(x_input, verbose=0)
+	#print(yhat)
 
-end_time = time.perf_counter()
+	#savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_predicted.csv',asarray(yhat),delimiter=',')
+	#savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_real.csv',asarray([traffic_data[sample_size:sample_size+n_steps_out]]),delimiter=',')
+	savetxt('LSTM_data.csv',asarray(yhat),delimiter=',')
 
-print(f"TIME TAKEN: {end_time-start_time} seconds")
+	RMSE_array = []
+	RMSE_plot = []
+	predicted_data = yhat[0]
+	real_data = traffic_data[sample_size:sample_size+n_steps_out]
+	MSE = np.square(np.subtract(real_data,predicted_data)).mean()
+	RMSE = math.sqrt(MSE)
+	loss = mean_absolute_percentage_error(real_data, predicted_data)
+	RMSE_values[f'{i}'] = RMSE
+	MAPE_values[f'{i}'] = loss.numpy()
 
+	end_time = time.perf_counter()
 
-#plt.plot([i for i in range(1,len(traffic_data[sample_size:sample_size+n_steps_out])+1)], traffic_data[sample_size:sample_size+n_steps_out], [i for i in range(1,len(yhat[0])+1)], yhat[0])
-#plt.xlabel("Data Points (every 15 minutes)")
-#plt.ylabel("Traffic (number of cars)")
-#plt.savefig(f'{n_steps_in}_steps_in_{sample_size}_sample.png')
-#plt.clf()
+	print(f"TIME TAKEN: {end_time-start_time} seconds")
+
+	plt.plot([i*15 for i in range(1,len(real_data)+1)], real_data, [i*15 for i in range(1,len(yhat[0])+1)], yhat[0])
+	plt.xlabel("Time (minutes)")
+	plt.ylabel("Traffic (number of cars)")
+	plt.legend(['Real','Predicted'], loc='upper right')
+	#plt.show()
+	#plt.savefig(f'real_vs_predicted_{i}.png')
+	plt.clf()
+
+print(RMSE_values)
+print(MAPE_values)
