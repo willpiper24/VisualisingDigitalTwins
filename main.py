@@ -29,10 +29,10 @@ def run():
         LSTM_data = [float(i) for i in LSTM_data]
     csv_file.close()
 
-    max_traffic = []
+    max_traffic_list = []
     for i in range(len(LSTM_data)-1):
-        max_traffic.append(LSTM_data[i]+LSTM_data[i+1]) 
-        max_traffic = max(max_traffic)
+        max_traffic_list.append(LSTM_data[i]+LSTM_data[i+1]) 
+        max_traffic = max(max_traffic_list)
 
     data_dict = {}
     data_dict['michael_data'] = {}
@@ -55,7 +55,7 @@ def run():
         predicted_traffic = sum(LSTM_data[column*2:column*2+2])
         data_dict['LSTM_data'][time]['predicted_traffic'] = str(round(predicted_traffic))
         base_brightness = 50
-        data_dict['LSTM_data'][time]['predicted_brightness'] = str(base_brightness + (predicted_traffic/max_traffic)*(100-base_brightness))
+        data_dict['LSTM_data'][time]['predicted_brightness'] = str(round(base_brightness + (predicted_traffic/max_traffic)*(100-base_brightness),1))
 
     with open('All_the_data.json', 'w') as outfile:
         json.dump(data_dict, outfile)

@@ -17,7 +17,9 @@ public class JsonLoader3 : MonoBehaviour
 {
     public string jsonFile;
     public TextMeshPro textMesh;
+    public TextMeshPro textMeshBrightness;
     public float set_brightness;
+    public float autoBrightness;
     public string time;
     public string displayTime;
     public string displayLEDMode;
@@ -29,6 +31,7 @@ public class JsonLoader3 : MonoBehaviour
     {
         textMesh = GetComponent<TextMeshPro>();
         set_brightness = 100;
+        autoBrightness = 100;
         StartCoroutine(UpdateValues());
     }
 
@@ -50,14 +53,30 @@ public class JsonLoader3 : MonoBehaviour
     {
         Color lampOff = new Color(0.9f, 0.9f, 0.9f, 0.3f);
         var sphereRenderer = GameObject.Find("Sphere").GetComponent<Renderer>();
-        if (sphereRenderer.material.GetColor("_Color") == lampOff)
+        if (sphereRenderer.material.GetColor("_Color") != lampOff)
         {
             set_brightness = 0;
+        }
+        else if (set_brightness == autoBrightness)
+        {
+            return;
         }
         else
         {
             set_brightness = 100;
         }
+    }
+
+    public void OnToggleBrightnessSwitch()
+    {
+        Color lampOff = new Color(0.9f, 0.9f, 0.9f, 0.3f);
+        Color lampAuto = new Color(1.0f, 1.0f, 0.5f, autoBrightness / 100);
+        Color lampGlow = new Color(1.0f, 1.0f, 0.5f);
+        var sphereRenderer = GameObject.Find("Sphere").GetComponent<Renderer>();
+        textMeshBrightness = GameObject.Find("Text (TMP) Brightness").GetComponent<TextMeshPro>();
+        textMeshBrightness.text = $"Brightness: {autoBrightness}%";
+        sphereRenderer.material.SetColor("_Color", lampAuto);
+        set_brightness = autoBrightness;
     }
 
     IEnumerator GetJson()
@@ -124,6 +143,8 @@ public class JsonLoader3 : MonoBehaviour
             //string displayHourlyTraffic = jsonFile["michael_data"][time]["hourly_traffic"].Value;
             //string displayPV = jsonFile["michael_data"][time]["PV"].Value;
             string predictedTraffic = jsonFile["LSTM_data"][time]["predicted_traffic"].Value;
+            string autoBrightnessString = jsonFile["LSTM_data"][time]["predicted_brightness"].Value;
+            autoBrightness = float.Parse(autoBrightnessString);
 
             DateTime thisDay = DateTime.Today;
 
@@ -140,7 +161,8 @@ public class JsonLoader3 : MonoBehaviour
                 $"\nLED mode: {displayLEDMode}" +
                 //$"\nHourly traffic (cars and people): {displayHourlyTraffic}" +
                 //$"\nPV: {displayPV} W/m^2" +
-                $"\nPredicted traffic in next half hour (cars): {predictedTraffic}";
+                $"\nPredicted traffic in next half hour (cars): {predictedTraffic}" +
+                $"\nAutomatic brightness (from predicted traffic): {autoBrightnessString}%";
         }
         catch
         {

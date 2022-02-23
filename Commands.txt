@@ -1,4 +1,4 @@
-ssh pi pi@192.168.1.246
+ssh pi@192.168.1.246
 scp -r pi@192.168.1.246:/home/pi/Documents/dtserver C:\Users\Hongjian\Documents\Will_Piper\GitHub\fyp
 
 cd Documents\Will_Piper\GitHub\fyp

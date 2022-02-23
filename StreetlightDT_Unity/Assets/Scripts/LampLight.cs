@@ -32,7 +32,7 @@ public class LampLight : MonoBehaviour
         }
         else
         {
-           textMesh.text = "Lamp is off";
+            textMesh.text = "Lamp is off";
         }
     }
 
@@ -40,7 +40,7 @@ public class LampLight : MonoBehaviour
     {
         Color lampOff = new Color(0.9f, 0.9f, 0.9f, 0.3f);
         var sphereRenderer = GameObject.Find("Sphere").GetComponent<Renderer>();
-        if (sphereRenderer.material.GetColor("_Color") == lampOff)
+        if (sphereRenderer.material.GetColor("_Color") != lampOff)
         {
             textMesh.text = "Lamp is off";
         }
