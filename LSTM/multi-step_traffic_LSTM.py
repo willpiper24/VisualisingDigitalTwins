@@ -30,6 +30,20 @@ def split_sequence(sequence, n_steps_in, n_steps_out):
 		y.append(seq_y)
 	return array(X), array(y)
 
+def run_LSTM(X, y, raw_seq, n_steps_in, n_steps_out, n_features):
+	model = Sequential()
+	model.add(LSTM(200, activation='relu', return_sequences=True, input_shape=(n_steps_in, n_features)))
+	model.add(LSTM(200, activation='relu'))
+	model.add(Dense(n_steps_out))
+	model.compile(optimizer='adam', loss='mse')
+	# fit model
+	model.fit(X, y, epochs=200, verbose=0)
+	# demonstrate prediction
+	x_input = array(raw_seq[-1-n_steps_in:-1])
+	x_input = x_input.reshape((1, n_steps_in, n_features))
+	yhat = model.predict(x_input, verbose=0)
+	return yhat
+
 with open("traffic_data_real.csv", newline = '') as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter = ' ')
 	traffic_data = []
@@ -52,7 +66,11 @@ for i in range(0,1):
 
 	sample_size = math.floor(total_seconds/(15*60))-2
 	#sample_size = 35039
-	raw_seq = traffic_data[sample_size-(96*7*4):sample_size]
+	start_index = sample_size-(96*7*4)
+	if start_index < 0:
+		raw_seq	= traffic_data[start_index:0] + traffic_data[0:sample_size]
+	else:
+		raw_seq = traffic_data[start_index:sample_size]
 
 	start_time = time.perf_counter()
 
@@ -64,19 +82,8 @@ for i in range(0,1):
 	# reshape from [samples, timesteps] into [samples, timesteps, features]
 	n_features = 1
 	X = X.reshape((X.shape[0], X.shape[1], n_features))
-	# define model
-	model = Sequential()
-	model.add(LSTM(100, activation='relu', return_sequences=True, input_shape=(n_steps_in, n_features)))
-	model.add(LSTM(100, activation='relu'))
-	model.add(Dense(n_steps_out))
-	model.compile(optimizer='adam', loss='mse')
-	# fit model
-	model.fit(X, y, epochs=100, verbose=0)
-	# demonstrate prediction
-	x_input = array(raw_seq[-1-n_steps_in:-1])
-	x_input = x_input.reshape((1, n_steps_in, n_features))
-	yhat = model.predict(x_input, verbose=0)
-	#print(yhat)
+
+	yhat = run_LSTM(X, y, raw_seq, n_steps_in, n_steps_out, n_features)
 
 	#savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_predicted.csv',asarray(yhat),delimiter=',')
 	#savetxt(f'{n_steps_in}_steps_in_{sample_size}_sample_real.csv',asarray([traffic_data[sample_size:sample_size+n_steps_out]]),delimiter=',')
@@ -100,9 +107,9 @@ for i in range(0,1):
 	plt.xlabel("Time (minutes)")
 	plt.ylabel("Traffic (number of cars)")
 	plt.legend(['Real','Predicted'], loc='upper right')
-	#plt.show()
+	plt.show()
 	#plt.savefig(f'real_vs_predicted_{i}.png')
 	plt.clf()
 
-print(RMSE_values)
-print(MAPE_values)
+#print(RMSE_values)
+#print(MAPE_values)

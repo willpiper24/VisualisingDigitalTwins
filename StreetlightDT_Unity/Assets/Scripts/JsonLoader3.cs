@@ -164,10 +164,10 @@ public class JsonLoader3 : MonoBehaviour
                 $"\nPredicted traffic in next half hour (cars): {predictedTraffic}" +
                 $"\nAutomatic brightness (from predicted traffic): {autoBrightnessString}%";
         }
-        catch
+        catch (Exception ex)
         {
-            Debug.Log("Network Error");
-            textMesh.text = "Network Error";
+            Debug.Log("Error: " + ex.Message);
+            textMesh.text = "Error: " + ex.Message;
         }
     }
 
