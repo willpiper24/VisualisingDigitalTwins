@@ -103,13 +103,13 @@ for i in range(0,1):
 
 	print(f"TIME TAKEN: {end_time-start_time} seconds")
 
-	plt.plot([i*15 for i in range(1,len(real_data)+1)], real_data, [i*15 for i in range(1,len(yhat[0])+1)], yhat[0])
-	plt.xlabel("Time (minutes)")
-	plt.ylabel("Traffic (number of cars)")
-	plt.legend(['Real','Predicted'], loc='upper right')
-	plt.show()
+	#plt.plot([i*15 for i in range(1,len(real_data)+1)], real_data, [i*15 for i in range(1,len(yhat[0])+1)], yhat[0])
+	#plt.xlabel("Time (minutes)")
+	#plt.ylabel("Traffic (number of cars)")
+	#plt.legend(['Real','Predicted'], loc='upper right')
+	#plt.show()
 	#plt.savefig(f'real_vs_predicted_{i}.png')
-	plt.clf()
+	#plt.clf()
 
 #print(RMSE_values)
 #print(MAPE_values)

@@ -102,6 +102,8 @@ All_the_data2(1:5,:) = Rmemo_backup(1:5,:);
 All_the_data2(6,:) = Rmemo_backup(7,:);
 All_the_data2(7,:) = Rmemo_backup(9,:);
 All_the_data2(8,:) = Rmemo_backup(10,:);
+PV_data_pred = cell2mat(struct2cell(PV_Power_episode));
+All_the_data2(9,:) = PV_data_pred(6,:,1:T_episode);
 
 writematrix(All_the_data2, 'All_the_data.csv');
 

@@ -20,6 +20,7 @@ def run():
         csv_reader = csv.reader(csv_file, delimiter=',')
         x = list(csv_reader)
         data = np.array(x)
+        max_PV = float(max(data[8]))
     csv_file.close()
 
     LSTM_csv_path = os.path.join(LSTM_dir,'LSTM_data.csv')
@@ -50,12 +51,13 @@ def run():
         data_dict['michael_data'][time]['electricity_to_buy'] = str(data[6][column])
         data_dict['michael_data'][time]['LED_mode'] = str(data[7][column])
         #data_dict['michael_data'][time]['hourly_traffic'] = str(data[8][column])
-        #data_dict['michael_data'][time]['PV'] = str(data[9][column])
+        predicted_PV = float(data[8][column])
+        data_dict['michael_data'][time]['predicted_PV'] = str(predicted_PV)
         #data_dict['LSTM_data'][time]['predicted_traffic'] = str(round(sum(LSTM_data[int(float(time)/0.25):int(float(time)/0.25+2)])))
         predicted_traffic = sum(LSTM_data[column*2:column*2+2])
         data_dict['LSTM_data'][time]['predicted_traffic'] = str(round(predicted_traffic))
         base_brightness = 50
-        data_dict['LSTM_data'][time]['predicted_brightness'] = str(round(base_brightness + (predicted_traffic/max_traffic)*(100-base_brightness),1))
+        data_dict['LSTM_data'][time]['predicted_brightness'] = str(round(base_brightness + (predicted_traffic/max_traffic)*(1-predicted_PV/max_PV)*(100-base_brightness),1))
 
     with open('All_the_data.json', 'w') as outfile:
         json.dump(data_dict, outfile)
