@@ -81,7 +81,8 @@ public class JsonLoader3 : MonoBehaviour
 
     IEnumerator GetJson()
     {
-        string uri = "http://192.168.1.246:5000/api?brightness=" + set_brightness.ToString();
+        // INSERT RAPSBERRY PI IP ADDRESS BELOW
+        string uri = "http://IP_ADDRESS_HERE:5000/get_data?brightness=" + set_brightness.ToString();
         UnityWebRequest webRequest = UnityWebRequest.Get(uri);
         yield return webRequest.SendWebRequest();
         try
@@ -156,7 +157,7 @@ public class JsonLoader3 : MonoBehaviour
                 $"\nElectricity to use: {displayElectricityToUse} Wh" +
                 $"\nElectricity generated: {displayElectricityGenerated} Wh" +
                 $"\nBattery SOC: {displayBatterySoc} Wh" +
-                $"\nElectricity price: {displayElectricityPrice} €/MWh" +
+                $"\nElectricity price: {displayElectricityPrice} ?/MWh" +
                 $"\nElectricity to buy: {displayElectricityToBuy} Ah" +
                 $"\nLED mode: {displayLEDMode}" +
                 //$"\nHourly traffic (cars and people): {displayHourlyTraffic}" +

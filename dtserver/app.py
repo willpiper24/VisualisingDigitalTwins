@@ -15,7 +15,7 @@ pcf = PCF.PCF8591(i2c)
 pcf_in_0 = AnalogIn(pcf, PCF.A0)
 pcf_out = AnalogOut(pcf, PCF.OUT)
 
-@app.route("/api")
+@app.route("/get_data")
 def home():
 #     read brightness
     set_brightness = float(request.args.get('brightness'))

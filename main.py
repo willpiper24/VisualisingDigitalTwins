@@ -12,8 +12,8 @@ def run():
     LSTM_dir = os.path.join(os.getcwd(),'LSTM')
     if os.path.exists(os.path.join(streetlightdata_dir,'All_the_data.csv')):
         os.remove(os.path.join(streetlightdata_dir,'All_the_data.csv'))
-    subprocess.run(['matlab', '-batch', 'Virtual_Test'], cwd=streetlightdata_dir)
-    subprocess.run(['python', 'multi-step_traffic_LSTM.py'], cwd=LSTM_dir)
+    subprocess.run(['matlab', '-batch', 'DQN'], cwd=streetlightdata_dir)
+    subprocess.run(['python', 'LSTM.py'], cwd=LSTM_dir)
 
     streetlightdata_csv_path = os.path.join(streetlightdata_dir,'All_the_data.csv')
     with open(streetlightdata_csv_path) as csv_file:
@@ -62,11 +62,10 @@ def run():
     with open('All_the_data.json', 'w') as outfile:
         json.dump(data_dict, outfile)
 
-    subprocess.run(['scp', 'All_the_data.json', 'pi@192.168.1.246:/home/pi/Documents/dtserver/All_the_data.json'])
-    subprocess.run(['scp', os.path.join(streetlightdata_dir,'net_power_demand.png'), 'pi@192.168.1.246:/home/pi/Documents/dtserver/net_power_demand.png'])
+    # INSERT RAPSBERRY PI IP ADDRESS BELOW
+    subprocess.run(['scp', 'All_the_data.json', 'pi@IP_ADDRESS_HERE:/home/pi/Documents/dtserver/All_the_data.json'])
+    subprocess.run(['scp', os.path.join(streetlightdata_dir,'net_power_demand.png'), 'pi@IP_ADDRESS_HERE:/home/pi/Documents/dtserver/net_power_demand.png'])
 
-#while True:
-    #run()
-    #time.sleep(5)
-
-run()
+while True:
+    run()
+    time.sleep(5)

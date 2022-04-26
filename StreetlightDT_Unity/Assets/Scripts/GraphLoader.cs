@@ -34,7 +34,8 @@ public class GraphLoader : MonoBehaviour
     {
         while (true)
         {
-            StartCoroutine(DownloadImage("http://192.168.1.246:5000/get_image"));
+            // INSERT RAPSBERRY PI IP ADDRESS BELOW
+            StartCoroutine(DownloadImage("http://IP_ADDRESS_HERE:5000/get_image"));
             yield return new WaitForSeconds(5);
         }
     }
